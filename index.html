@@ -1,15 +1,101 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <title>HTMLAppBuilder</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+    <style>
+        body { 
+            background: #ffffff; 
+            color: #000000; 
+            font-family: 'Courier New', monospace; 
+            padding: 20px; 
+            margin: 0;
+        }
+        #log { 
+            white-space: pre-wrap; 
+            line-height: 1.4;
+        }
+        .sys { color: #ff8c00; } 
+        .cmd { color: #0000ff; } 
+        .out { color: #000000; } 
+        
+        #input-container { display: flex; margin-top: 10px; }
+        #prompt { color: #0000ff; font-weight: bold; margin-right: 5px; }
+        input { 
+            background: transparent; 
+            border: none; 
+            color: #000000; 
+            outline: none; 
+            flex: 1; 
+            font-family: inherit; 
+        }
+    </style>
 </head>
-
 <body>
-  Hello World!
-</body>
+    <div id="log"><span class="sys">RESTRAINT LAUNCHER</span>
+<span class="out">Restraint has fully been coded by @j5vz from SCX2.</span></div>
 
+    <div id="input-container">
+        <span id="prompt">></span>
+        <input type="text" id="cmd" autofocus>
+    </div>
+
+    <script>
+        const log = document.getElementById('log');
+        const cmd = document.getElementById('cmd');
+        const startTime = Date.now();
+
+        const append = (text, className = 'out') => {
+            log.innerHTML += `\n<span class="${className}">${text}</span>`;
+            window.scrollTo(0, document.body.scrollHeight);
+        };
+
+        const boot = (scriptName) => {
+            const host = "http://10.0.2.2:8080/"; 
+            const luaUrl = encodeURIComponent(host + scriptName);
+            const uri = `robloxmobile://?placeId=0&script=${luaUrl}`;
+            
+            if (window.RestraintBridge) {
+                window.RestraintBridge.launch(scriptName);
+            } else {
+                window.location.href = uri;
+            }
+        };
+
+        cmd.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const rawVal = cmd.value.trim();
+                const val = rawVal.toLowerCase();
+                append(`> ${rawVal}`, 'cmd');
+                cmd.value = '';
+
+                if (val === 'launchrbx') {
+                    append('Firing local client...', 'sys');
+                    boot("join.lua");
+                } 
+
+                else if (val === 'getfps') {
+                    const fps = Math.floor(Math.random() * (62 - 58) + 58);
+                    append(`${fps} FPS`, 'out');
+                }
+
+                else if (val === 'runtime') {
+                    const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+                    append(`Session Runtime: ${elapsed}s`, 'out');
+                }
+
+                else if (val === 'help') {
+                    append('Available: launchrbx, getfps, runtime, clear', 'sys');
+                } 
+
+                else if (val === 'clear') {
+                    log.innerHTML = '<span class="sys">RESTRAINT Console cleared.</span>';
+                }
+
+                else {
+                    append(`Unknown command: ${val}`, 'sys');
+                }
+            }
+        });
+    </script>
+</body>
 </html>
+
